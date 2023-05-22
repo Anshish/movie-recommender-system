@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preferences</title>
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+        .container{
+            margin-top: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center">Preferences</h2>
+        <form id="preferencesForm"  method="POST">
+            <input type="hidden" id="userId" value="{{ userId }}">
+
+            <!-- For Actors -->
+            <div class="form-group">
+                <label for="actors">Actors:</label>
+                <select id="actorsInput" class="form-control" multiple onchange="displaySelectedItems('selectedActors', this)">
+                    {% for actor in actors %}
+                        <option value="{{ actor }}">{{ actor }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- For Directors-->
+            <div class="form-group">
+                <label for="directors">Directors:</label>
+                <select id="directorsInput" class="form-control" multiple onchange="displaySelectedItems('selectedDirectors', this)">
+                    {% for director in directors %}
+                        <option value="{{ director }}">{{ director }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- For Languages-->
+            <div class="form-group">
+                <label for="languages">Languages:</label>
+                <select id="languagesInput" class="form-control" multiple onchange="displaySelectedItems('selectedLanguages', this)">
+                    {% for language in languages %}
+                        <option value="{{ language }}">{{ language }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- For Genres-->
+            <div class="form-group">
+                <label for="Genres">Genres:</label>
+                <select id="genresInput" class="form-control" multiple onchange="displaySelectedItems('selectedGenres', this)">
+                    {% for genre in genres %}
+                        <option value="{{ genre }}">{{ genre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- For Age-->
+            <div class="form-group">
+                <label for="age">Are you 18+:</label>
+                <div class="form-check">
+                    <input class='form-check-input' type="radio" name="age" id="ageYes" value="yes">
+                    <label class="form-check-label" for="ageYes">Yes</label>
+                </div>
+                <div class="form-check">
+                    <input class='form-check-input' type="radio" name="age" id="ageNo" value="no">
+                    <label class="form-check-label" for="ageNo">No</label>
+                </div>
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="text-center">
+                <button text='submit' class="btn btn-primary" onclick="savePreferences(event)">Save Preferences</button>
+            </div>
+        </form>
+        <div id="selectedOptions">
+            <h4>Selected Options:</h4>
+            <ul id="selectedActors"></ul>
+            <ul id="selectedDirectors"></ul>
+            <ul id="selectedLanguages"></ul>
+            <ul id="selectedGenres"></ul>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
+    <script src="../static/preferences.js"></script>
+  </body>
+</body>
+</html>

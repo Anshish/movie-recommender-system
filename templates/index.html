@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Flix</title>
+    
+    <!-- include local stylesheets -->
+    <link rel="stylesheet" type="text/css" href="../static/styles.css">
+    
+
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+</head>
+<body>
+    <!-- Home Page Content -->
+    <div class="container">
+        <input type="hidden" id="userId" value="{{ userId }}">
+        <!-- Navbar -->
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand navbar-light bg-light">
+            <a class="navbar-brand home" href="/welcome/{{userId}}">Home</a>
+            <div class="navbar-collapse justify-content-center">
+                <span class="navbar-text title">Movie Recommender System</span>
+            </div>
+            <div class="navbar-collapse justify-content-end">
+                <a class="btn btn-outline-dark log-out" href="/logout">Log Out</a>
+            </div>
+        </nav>
+
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <form class="form-inline" id="input-form">
+                <input class="form-control form-control-lg search-input" id='search-input' type="search" placeholder="Search Movies" list='movie-titles' aria-label="Search">
+                <datalist id="movie-titles"></datalist>
+                <button class="btn btn-primary search-button" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Movie Rows -->
+    <div class="custom-container">
+        
+        <!-- For preferences movies -->
+        {% if flag %}
+        <div class='movie-row row' style="margin-top: 20px;">
+            <div class="col-12" style="margin-bottom: 20px;">
+                <h3>Movies based on your preferences</h3>
+            </div>
+            <div class="row" >
+                {% for i in range(rec_titles|length) %}
+                <div class="col-xs movie-list" id='pref'>
+                    <img src="{{rec_posters[i]}}" alt="{{rec_titles[i]}}" class="img-fluid movie-poster">
+                    <p class="movie-title" id="pref_title">{{rec_titles[i]}}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        <hr class="class-1">
+
+        <!-- For popular movies -->
+
+        <div class='movie-row row' >
+            <div class="col-12" style="margin-bottom: 10px;">
+                <h3>Popular Movies</h3>
+            </div>
+            <div class="row" id="movies-popular">
+
+            </div>
+        </div>
+
+
+        <hr class="class-1">
+        <!-- For top-rated movies -->
+        <div class='movie-row row' >
+            <div class="col-12" style="margin-bottom: 10px;">
+                <h3>Top-Rated Movies</h3>
+            </div>
+            <div class="row" id="movies-top-rated">
+
+            </div>
+        </div>
+        <hr class="class-1">
+            
+        <!-- For get movies by year -->
+        <div class='movie-row row'>
+            <div class="col-12">
+                <h3>Year</h3>
+            </div>
+            <div class="col-12" style="margin-top: 5px; margin-bottom: 10px;">
+                <select id="year-select">
+                    <option value="">All Years</option>
+                </select>
+            </div>
+            <div class="row" id="movies-year">
+
+            </div>
+        </div>
+        <hr class="class-1">
+        <!-- For get movies by language -->
+        <div class='movie-row row'>
+            <div class="col-12">
+                <h3>Language</h3>
+            </div>
+            <div class="col-12">
+                <select id="language-select" style="margin-top: 5px; margin-bottom: 10px;">
+                    <option value="">All Languages</option>
+                </select>
+            </div>
+            <div class="row" id="movies-language">
+
+            </div>
+        </div>
+        <hr class="class-1">
+        <!-- For get movies by genre -->
+        <div class='movie-row row'>
+            <div class="col-12">
+                <h3>Genre</h3>
+            </div>
+            <div class="col-12">
+                <select id="genre-select" style="margin-top: 5px; margin-bottom: 10px;">
+                    <option value="">All Genres</option>
+                </select>
+            </div>
+            <div class="row" id="movies-genre">
+
+            </div>
+        </div>
+        <hr class="class-1">
+            <!-- Add more movie rows here -->
+            
+    </div>
+
+    <!-- Javascript -->
+    <!-- Javascript -->
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="../static/main.js"></script>
+    <script>
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+    </script>
+    <!-- Slick Slider JS -->
+<script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    
+</body>
+</html>
