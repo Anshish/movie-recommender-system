@@ -316,7 +316,9 @@ function handleSearch(event) {
       if (response.ok) {
         redirectToDetailsPage(movieTitle);
       } else {
-        alert("Sorry, Movie not found");
+        var ele = document.getElementById("search-message");
+        ele.textContent =
+          "Sorry but this movie is not available in our database";
       }
     })
     .catch((error) => {

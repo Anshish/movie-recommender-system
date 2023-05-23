@@ -104,7 +104,8 @@ ratingForm.addEventListener("submit", (e) => {
   })
     .then((response) => response.json())
     .then((data) => {
-      alert(data.message);
+      var ele = document.getElementById("rating-message");
+      ele.textContent = data.message;
       updateAverageRating(data.new_average);
     })
     .catch((error) => {

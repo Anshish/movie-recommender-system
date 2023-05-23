@@ -1,13 +1,10 @@
 from flask import Flask,render_template, session,request, url_for,jsonify, redirect
 import pickle
-import pandas as pd
-import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from pymongo import MongoClient
 import uuid
 import certifi
-import ssl
-import secrets
+
 
 ca = certifi.where()
 ###############################################################
@@ -583,6 +580,9 @@ def submit_rating():
     if result :
         print('you have rated this movie')
         message='You have already rated this movie'
+        res=ratings_collections.find_one({'movie_name': movie_title})
+        new_vote_average=res['vote_average']
+
     else:
         res=ratings_collections.find_one({'movie_name': movie_title})
         current_vote_average = res['vote_average']
