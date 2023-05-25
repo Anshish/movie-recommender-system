@@ -18,6 +18,7 @@ db=client['movie_database']
 # 3. Create collections
 users_collections=db['users']
 preferences_collections=db['preferences']
+metadata_collections=db['metadata']
 ratings_collections=db['ratings']
 
  
@@ -34,16 +35,19 @@ movies=pickle.load(file)
 file.close()
 
 
-# 2. Import popularity movies dataset
-file=open('./datasets/popularity.pkl','rb')
-popularity=pickle.load(file)
-file.close()
+# # 2. Import popularity movies dataset
+# file=open('./datasets/popularity.pkl','rb')
+# popularity=pickle.load(file)
+# file.close()
+popularity=movies.sort_values('popularity',ascending=False)[0:20]
 
 
 # 3. Import top-rated movies dataset
-file=open('./datasets/top_rated.pkl','rb')
-top_rated=pickle.load(file)
-file.close()
+# file=open('./datasets/top_rated.pkl','rb')
+# top_rated=pickle.load(file)
+# file.close()
+top_rated=movies.sort_values('weigh_avg_rating',ascending=False)
+
 
 
 # 4. Import tfidf matrix for recommendations 
@@ -53,9 +57,9 @@ file.close()
 
 
 # 5. Import data 
-file=open('./datasets/data.pkl','rb')
-data=pickle.load(file)
-file.close()
+# file=open('./datasets/data.pkl','rb')
+# data=pickle.load(file)
+# file.close()
 ###############################################################
 
 language_codes = {
@@ -115,7 +119,7 @@ popular_movie_posters=[]
 popular_movie_titles=[]
 count=0
 for index,row in popularity.iterrows():
-    if count==10:
+    if count==20:
         break
     else:
         popular_movie_posters.append('https://image.tmdb.org/t/p/original'+row['poster_path'])
@@ -128,7 +132,7 @@ top_rated_movie_posters=[]
 top_rated_movie_titles=[]
 count=0
 for index,row in top_rated.iterrows():
-    if count==10:
+    if count==20:
         break
     else:
         top_rated_movie_posters.append('https://image.tmdb.org/t/p/original'+row['poster_path'])
@@ -141,8 +145,8 @@ def get_by_year(year):
     count=0
     movie_lis=[]
     poster_lis=[]
-    for index,row in popularity.iterrows():
-        if count==10:
+    for index,row in top_rated.iterrows():
+        if count==20:
             break
         else:
             if row['release_year']==year:
@@ -157,8 +161,8 @@ def get_by_language(language):
     count=0
     titles_lis=[]
     posters_lis=[]
-    for index,row in popularity.iterrows():
-        if count==10:
+    for index,row in top_rated.iterrows():
+        if count==20:
             break
         else:
             if row['original_language']==language:
@@ -174,8 +178,8 @@ def get_by_genre(genre):
     count=0
     titles=[]
     posters=[]
-    for index,row in popularity.iterrows():
-        if count==10:
+    for index,row in top_rated.iterrows():
+        if count==20:
             break
         else:
             for gen in row['genre']:
@@ -204,7 +208,7 @@ def get_details(title):
     cast=details['cast'].values[0]
     crew=details['crew'].values[0][0]     
     # vote_count=int(details['vote_count'].values[0])
-    result = ratings_collections.find_one({'movie_name': title})
+    result = metadata_collections.find_one({'movie_name': title})
     vote=round(result['vote_average'],1)
     movie_data={
         'title':title,
@@ -227,14 +231,14 @@ similarity=get_cosine_similarity(matrix)
 
 # 8. Get recommendations
 def get_recommendations(title):
-    movie_index = data[data['title'] == title].index[0]  # this will give index of the movie in data frame
+    movie_index = movies[movies['title'] == title].index[0]  # this will give index of the movie in data frame
     distances = similarity[movie_index]  # this will give similarity score of given movie with other movies
     movie_list = sorted(list(enumerate(distances)), reverse=True, key=lambda x: x[1])[
                  1:16]  # this will give top 5 movies with highest similarity score and their index
     rec_title_lis=[]
     rec_poster_lis=[]
     for i in movie_list:
-        movieTitle=data.iloc[i[0]].title
+        movieTitle=movies.iloc[i[0]].title
         deets=movies.loc[movies['title']==movieTitle]
         pos='https://image.tmdb.org/t/p/original'+deets['poster_path'].values[0]
         rec_title_lis.append(movieTitle)
@@ -289,7 +293,7 @@ def get_by_user(cast_lis,crew_lis,language_lis,genre_lis,adult_lis):
     frequency={}
 
     # for cast
-    for index,row in popularity.iterrows():
+    for index,row in movies.iterrows():
         cast=row['cast']
         crew=row['crew']
         original_language=row['original_language']
@@ -335,7 +339,7 @@ def get_by_user(cast_lis,crew_lis,language_lis,genre_lis,adult_lis):
     titles=[]
     posters=[]
     for i, (key, value) in enumerate(frequency.items()):
-        if i >= 10:
+        if i >= 20:
             break
         title=key
         deets=movies.loc[movies['title']==title]
@@ -343,6 +347,23 @@ def get_by_user(cast_lis,crew_lis,language_lis,genre_lis,adult_lis):
         titles.append(title)
         posters.append(pos)
     return [titles,posters]
+
+def get_key_from_value(dictionary,value):
+    for key,val in dictionary.items():
+        if val==value:
+            return key
+    return None
+
+
+# 14. Get deets
+def get_deets(name):
+    details=movies.loc[movies['title']==name]
+    genres=details['genre'].values[0]
+    cast=details['cast'].values[0]
+    crew=details['crew'].values[0][0]
+    language=details['original_language'].values[0]
+    ori_lan=get_key_from_value(language_codes,language)
+    return [cast,crew,genres,ori_lan]
 ###############################################################
 
 
@@ -570,7 +591,7 @@ def submit_rating():
     print('user_rating',rating)
     print('userId',userId)
 
-    result=ratings_collections.find_one({'movie_name':movie_title,'users':userId})
+    result=metadata_collections.find_one({'movie_name':movie_title,'users':userId})
 
     current_vote_average=0
     current_vote_count=0
@@ -580,17 +601,17 @@ def submit_rating():
     if result :
         print('you have rated this movie')
         message='You have already rated this movie'
-        res=ratings_collections.find_one({'movie_name': movie_title})
+        res=metadata_collections.find_one({'movie_name': movie_title})
         new_vote_average=res['vote_average']
 
     else:
-        res=ratings_collections.find_one({'movie_name': movie_title})
+        res=metadata_collections.find_one({'movie_name': movie_title})
         current_vote_average = res['vote_average']
         current_vote_count = res['vote_count']
         print('current vote average',current_vote_average)
         new_vote_average = ((current_vote_average * current_vote_count) + rating) / (current_vote_count + 1)
         print('new',new_vote_average)
-        ratings_collections.update_one(
+        metadata_collections.update_one(
             {'movie_name':movie_title},
             {
                 '$set':{'vote_average':new_vote_average},
@@ -600,11 +621,43 @@ def submit_rating():
         )
 
         # Optionally, you can increment the vote_count field by 1
-        ratings_collections.update_one(
+        metadata_collections.update_one(
             {'movie_name': movie_title},
             {'$inc': {'vote_count': 1}}
         )
         message='User rating is added successfully'
+        
+        if(rating>=6.0):
+            actors,directors,genres,languages=get_deets(movie_title)
+            print(actors)
+            print(directors)
+            print(genres)
+            print(languages)
+            age=None
+            pref=preferences_collections.find_one({'userId':userId})
+            if pref:
+                # User exists, update their preferences
+                preferences_collections.update_one(
+                    {'userId': userId},
+                    {'$addToSet': {
+                        'actors': {'$each':actors},
+                        'directors': directors,
+                        'genres': {'$each':genres},
+                        'languages': languages
+                    }}
+                )
+            else:
+                preferences={
+                    'userId':userId,
+                    'actors': actors,
+                    'directors': directors,
+                    'languages': languages,
+                    'genres': genres,
+                    'age':age
+                }
+                preferences_collections.insert_one(preferences)
+            message = 'User rating is added successfully. Movie details added to preferences.'
+
     return jsonify({
         'new_average':new_vote_average,
         'message':message
