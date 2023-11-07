@@ -1,9 +1,9 @@
 # Movie Recommendation System
 
-![Project Image](https://drive.google.com/file/d/12uj3ZMjuxTlrWtHPLl6fXOZBBBwM1dej/view?usp=drive_link)
-![Project Image](https://drive.google.com/file/d/1B8HNnx5WQhgRRf0eHq6jmOBbPbMKLyIZ/view?usp=drive_link)
-![Project Image](https://drive.google.com/file/d/14CKXJP2j1Iztf40fREva_Nfu0Ttt5zCD/view?usp=drive_link)
-![Project Image](https://drive.google.com/file/d/1fDsYtmPss46JI5T843yivjuLmiELgiBL/view?usp=drive_link)
+![Project Image](Picture1.png)
+![Project Image](Picture2.png)
+![Project Image](Picture3.png)
+![Project Image](Picture4.png)
 
 
 **Description:**
